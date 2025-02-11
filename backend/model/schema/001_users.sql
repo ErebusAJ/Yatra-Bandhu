@@ -6,8 +6,12 @@ CREATE TABLE users(
     phone_number VARCHAR(15) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    token_version INT DEFAULT 0,
+    access_level VARCHAR(30) DEFAULT 'user',
+    verified_status BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_logged_in TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- +goose Down

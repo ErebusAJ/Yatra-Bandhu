@@ -11,12 +11,16 @@ import (
 )
 
 type User struct {
-	ID           uuid.UUID
-	Name         string
-	Age          int32
-	PhoneNumber  string
-	Email        string
-	PasswordHash string
-	CreatedAt    sql.NullTime
-	UpdatedAt    sql.NullTime
+	ID             uuid.UUID
+	Name           string
+	Age            int32
+	PhoneNumber    string
+	Email          string
+	PasswordHash   string
+	TokenVersion   sql.NullInt32
+	AccessLevel    sql.NullString
+	VerifiedStatus sql.NullBool
+	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
+	LastLoggedIn   sql.NullTime
 }

@@ -26,10 +26,12 @@ func main() {
 	}
 
 	// Open DB connection
+	log.Printf("connecting to database... \n")
 	DB, err := utils.ConnectDB()
 	if err != nil {
 		log.Fatalf("%v \n", err)
 	}
+	log.Printf("connected to database!! \n")
 	defer DB.Close()
 
 	// Initilize router
