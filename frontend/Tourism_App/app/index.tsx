@@ -12,6 +12,8 @@ export default function Index() {
     >
       <Text>YatraBandhu</Text>
       <Link href="/get_started"> Get Started</Link>
+      <Link href="/sign-in"> SignIn</Link>
+      <Link href="/register"> Register</Link>
     </View>
   );
 }

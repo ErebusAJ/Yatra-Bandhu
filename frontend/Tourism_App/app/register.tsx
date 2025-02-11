@@ -8,34 +8,36 @@ import {
   TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ResizeMode } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
 
-const SignIn = () => {
-  const [username, setUsername] = useState("");
+const Register = ({ navigation }) => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    console.log("Login button clicked!");
+  const handleRegister = () => {
+    console.log("Register button clicked!");
   };
 
-  const handleGoogleLogin = () => {
-    console.log("Google Sign-In clicked!");
+  const handleGoogleSignUp = () => {
+    console.log("Google Sign-Up clicked!");
   };
 
-  const handleRegisterLink = () => {
-    console.log("Navigate to Register screen");
+  const handleSignInLink = () => {
+    navigation.navigate("SignIn"); // Navigate to SignIn screen
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.container}>
+      {/* Background Image */}
       <Image
         source={require("../assets/images/orangebg.jpg")}
         style={styles.bgImage}
-        resizeMode={ResizeMode.COVER}
       />
 
+      {/* Logo */}
       <View style={styles.logoContainer}>
         <Image
           source={require("../assets/images/icon.png")}
@@ -44,53 +46,58 @@ const SignIn = () => {
         />
       </View>
 
+      {/* Register Form with Blur Effect */}
       <BlurView intensity={100} style={styles.blurContainer}>
         <View style={styles.formContainer}>
-          <Text style={styles.loginTitle}>Login</Text>
+          <Text style={styles.registerTitle}>Create Account</Text>
 
+          {/* First Name Input */}
           <TextInput
             style={styles.input}
-            placeholder="Username"
-            value={username}
-            onChangeText={(text) => setUsername(text)}
+            placeholder="First Name"
+            value={firstName}
+            onChangeText={setFirstName}
             placeholderTextColor="#fff"
           />
+
+          {/* Last Name Input */}
+          <TextInput
+            style={styles.input}
+            placeholder="Last Name"
+            value={lastName}
+            onChangeText={setLastName}
+            placeholderTextColor="#fff"
+          />
+
+          {/* Email Input */}
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            placeholderTextColor="#fff"
+            keyboardType="email-address"
+          />
+
+          {/* Password Input */}
           <TextInput
             style={styles.input}
             placeholder="Password"
             value={password}
-            onChangeText={(text) => setPassword(text)}
+            onChangeText={setPassword}
             placeholderTextColor="#fff"
             secureTextEntry
           />
 
-          <Text style={styles.orText}>Or sign in with</Text>
-
-          <TouchableOpacity
-            style={styles.googleButton}
-            onPress={handleGoogleLogin}
-          >
-            <Image
-              source={require("../assets/images/google_icon.png")}
-              style={styles.googleIcon}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <TouchableOpacity style={styles.button} onPress={handleRegister}>
             <LinearGradient
               colors={["#FC6F6F", "#FC6F6F"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.button}
             >
-              <Text style={styles.buttonText}>Login</Text>
+              <Text style={styles.buttonText}>Register</Text>
             </LinearGradient>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={handleRegisterLink}>
-            <Text style={styles.registerLink}>
-              Don't have an account? Register
-            </Text>
           </TouchableOpacity>
         </View>
       </BlurView>
@@ -99,6 +106,9 @@ const SignIn = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   bgImage: {
     position: "absolute",
     width: "100%",
@@ -118,7 +128,7 @@ const styles = StyleSheet.create({
   },
   blurContainer: {
     position: "absolute",
-    top: "35%",
+    top: "30%",
     left: "10%",
     right: "10%",
     justifyContent: "center",
@@ -131,7 +141,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: "center",
   },
-  loginTitle: {
+  registerTitle: {
     fontSize: 28,
     fontWeight: "bold",
     color: "#fff",
@@ -169,11 +179,6 @@ const styles = StyleSheet.create({
     height: 25,
     borderRadius: 100,
   },
-  googleText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#000",
-  },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -187,7 +192,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     textAlign: "center",
   },
-  registerLink: {
+  signInLink: {
     fontSize: 16,
     color: "#fff",
     marginTop: 10,
@@ -195,4 +200,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignIn;
+export default Register;

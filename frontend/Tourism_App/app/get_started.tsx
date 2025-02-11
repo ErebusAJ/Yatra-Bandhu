@@ -5,48 +5,50 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  Image,
 } from "react-native";
 import { Video, ResizeMode } from "expo-av";
 import { useFonts } from "expo-font";
+import { LinearGradient } from "expo-linear-gradient";
+import { Link } from "expo-router";
 
-const GetStarted = () => {
+const GetStartedScreen = ({ navigation }) => {
   const videoRef = useRef(null);
 
-  useEffect(() => {
-    (async () => {
-      if (videoRef.current) {
-        await videoRef.current.playAsync();
-      }
-    })();
-  }, []);
+  const [fontsLoaded] = useFonts({
+    "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-Medium": require("../assets/fonts/Montserrat-Medium.ttf"),
+  });
 
   const handleGetStarted = () => {
     console.log("Get Started button clicked!");
-    // Add navigation or action here
+    navigation.navigate("sign-in");
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Video
-        ref={videoRef}
-        source={require("../assets/videos/getStarted.mp4")}
-        style={styles.video}
-        resizeMode={ResizeMode.COVER}
-        shouldPlay
-        isLooping
-        isMuted
+      <Image
+        source={require("../assets/images/getStarted.png")}
+        style={styles.base}
       />
-
-      <Text style={styles.title}>YatraBandhu</Text>
-
+      <Image
+        source={require("../assets/images/icon.png")}
+        style={styles.logo}
+      />
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitle}>A New Way To Travel</Text>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleGetStarted}>
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={handleGetStarted}>
+          <LinearGradient
+            colors={["#FC6F6F", "#FC6F6F"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.button}
+          >
             <Text style={styles.buttonText}>Get Started</Text>
-          </TouchableOpacity>
-        </View>
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -59,58 +61,55 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "relative",
   },
-  video: {
+  base: {
     position: "absolute",
     top: 0,
     left: 0,
     width: "100%",
     height: "100%",
   },
-  absolute: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1,
-  },
-  title: {
-    fontSize: 46,
-    fontWeight: "bold",
-    color: "#fff",
+  logo: {
     position: "absolute",
-    top: 120,
-    fontFamily: "Rubik-Bold",
+    top: 123,
+    left: 57,
+    height: 330,
+    width: 330,
     zIndex: 2,
+    alignItems: "center",
   },
   subtitleContainer: {
     position: "absolute",
-    bottom: "25%",
+    bottom: "14%",
     alignItems: "center",
     zIndex: 2,
   },
   subtitle: {
-    fontSize: 20,
-    color: "#fff",
-    marginBottom: 20,
+    fontSize: 32,
+    fontWeight: "400",
+    color: "#000",
+    marginBottom: 0,
   },
   buttonContainer: {
     position: "absolute",
-    bottom: "-180%",
-    width: "100%",
+    bottom: 20,
+    width: "95%",
     alignItems: "center",
     justifyContent: "center",
     zIndex: 2,
   },
   button: {
-    backgroundColor: "#0066cc",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderRadius: 20,
     width: "100%",
+    alignItems: "center",
   },
   buttonText: {
-    fontSize: 25,
-    color: "#fff",
-    fontWeight: "bold",
+    fontSize: 30,
+    color: "#000",
+    fontWeight: "400",
     textAlign: "center",
   },
 });
 
-export default GetStarted;
+export default GetStartedScreen;
