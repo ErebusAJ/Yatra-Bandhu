@@ -20,24 +20,13 @@ const Register = ({ navigation }) => {
   const handleRegister = () => {
     console.log("Register button clicked!");
   };
-
-  const handleGoogleSignUp = () => {
-    console.log("Google Sign-Up clicked!");
-  };
-
-  const handleSignInLink = () => {
-    navigation.navigate("SignIn"); // Navigate to SignIn screen
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      {/* Background Image */}
       <Image
         source={require("../assets/images/orangebg.jpg")}
         style={styles.bgImage}
       />
 
-      {/* Logo */}
       <View style={styles.logoContainer}>
         <Image
           source={require("../assets/images/icon.png")}
@@ -46,12 +35,10 @@ const Register = ({ navigation }) => {
         />
       </View>
 
-      {/* Register Form with Blur Effect */}
       <BlurView intensity={100} style={styles.blurContainer}>
         <View style={styles.formContainer}>
           <Text style={styles.registerTitle}>Create Account</Text>
 
-          {/* First Name Input */}
           <TextInput
             style={styles.input}
             placeholder="First Name"
@@ -60,7 +47,6 @@ const Register = ({ navigation }) => {
             placeholderTextColor="#fff"
           />
 
-          {/* Last Name Input */}
           <TextInput
             style={styles.input}
             placeholder="Last Name"
@@ -69,7 +55,6 @@ const Register = ({ navigation }) => {
             placeholderTextColor="#fff"
           />
 
-          {/* Email Input */}
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -79,7 +64,6 @@ const Register = ({ navigation }) => {
             keyboardType="email-address"
           />
 
-          {/* Password Input */}
           <TextInput
             style={styles.input}
             placeholder="Password"
@@ -91,7 +75,7 @@ const Register = ({ navigation }) => {
 
           <TouchableOpacity style={styles.button} onPress={handleRegister}>
             <LinearGradient
-              colors={["#FC6F6F", "#FC6F6F"]}
+              colors={["#fdb44b", "#fdb44b"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.button}

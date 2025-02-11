@@ -41,7 +41,7 @@ const GetStartedScreen = ({ navigation }) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleGetStarted}>
           <LinearGradient
-            colors={["#FC6F6F", "#FC6F6F"]}
+            colors={["#fdb44b", "#fdb44b"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.button}

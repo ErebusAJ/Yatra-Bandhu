@@ -14,6 +14,7 @@ export default function Index() {
       <Link href="/get_started"> Get Started</Link>
       <Link href="/sign-in"> SignIn</Link>
       <Link href="/register"> Register</Link>
+      <Link href="/profile"> Profile</Link>
     </View>
   );
 }
