@@ -10,6 +10,19 @@ import (
 	"github.com/google/uuid"
 )
 
+type TravelPlanDetail struct {
+	ID        uuid.UUID
+	CreatorID uuid.UUID
+	Place     string
+	StartDate string
+	EndDate   string
+	TripType  string
+	Pets      bool
+	Interests []string
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+}
+
 type User struct {
 	ID             uuid.UUID
 	Name           string

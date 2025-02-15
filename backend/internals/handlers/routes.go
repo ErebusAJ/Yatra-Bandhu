@@ -38,11 +38,17 @@ func RegisterRoutes(r *gin.Engine) {
 		log.Printf("error retrieving signed key \n")
 	}
 
+	// Authenticated Routes
 	protected := r.Group("/auth")
 	protected.Use(middleware.AuthMiddleware(signedKey))
 	{
+		// Users Routes
 		protected.GET("/user", apiCfg.getUserByID)
 		protected.PUT("/user", apiCfg.updateUser)
 		protected.DELETE("/user", apiCfg.deleteUser)
+		
+		// Travel Plan Details Routes
+		protected.POST("/travel-details", apiCfg.addTravelDetails)
+		protected.GET("/travel-details", apiCfg.getUserPlansDetails)
 	}
 }

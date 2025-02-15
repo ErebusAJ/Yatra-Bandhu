@@ -8,6 +8,7 @@ const(
 	IDParseError		=	"error parisng id to uuid"
 	InvalidAcces		= 	"error invalid access level"
 	InvalidAuth			= 	"error invalid authorization header"
+	ParsingError		= 	"error parsing the specified field"
 )
 
 // Client Errors
