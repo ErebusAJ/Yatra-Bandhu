@@ -1,7 +1,11 @@
 package handlers
 
 import (
+	"context"
 	"database/sql"
+	"fmt"
+	"log"
+	"time"
 
 	"github.com/ErebusAJ/YatraBandhu/internals/db"
 	"github.com/ErebusAJ/YatraBandhu/internals/utils"
@@ -68,7 +72,7 @@ func(cfg *apiConfig) loginUser(c *gin.Context){
 		utils.ErrorJSON(c, 401, utils.UnauthorizedError, utils.UnauthorizedError, err)
 		return
 	}
-
+	log.Printf("Entered Password: %v", reqDetails.Password)
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(reqDetails.Password))
 	if err != nil{
 		utils.ErrorJSON(c, 401, utils.UnauthorizedError, utils.UnauthorizedError, err)
@@ -193,4 +197,105 @@ func(cfg *apiConfig) deleteUser(c *gin.Context){
 	}
 	
 	c.IndentedJSON(204, utils.MessageObj("deleted success"))
+}
+
+
+// resetPasswordRequest
+// Sends a request to reset password
+// takes user's email sends a email if users exists
+func(cfg *apiConfig) resetPasswordRequest(c *gin.Context){
+	var reqDetails struct{
+		Email	string	`json:"email" binding:"required"`
+	}
+
+	err := c.BindJSON(&reqDetails)
+	if err != nil{
+		utils.ErrorJSON(c, 400, utils.RequestBodyError, utils.JSONError, err)
+		return
+	}
+
+	user, err := cfg.DB.GetUserByEmail(c, reqDetails.Email)
+	if err != nil{
+		utils.ErrorJSON(c, 500, utils.DatabaseError, utils.InternalError, err)
+		return
+	}
+
+	// Insert Token
+	token := uuid.NewString()
+	expires := time.Now().Add(15 * time.Minute)
+
+	err = cfg.DB.InsertToken(c, db.InsertTokenParams{
+		UserID: user.ID,
+		Token: token,
+		ExpiresAt: expires,
+	})
+	if err != nil{
+		utils.ErrorJSON(c, 500, utils.DatabaseError, utils.InternalError, err)
+		return 
+	}
+
+	// Send Email with Reset Link
+	url := fmt.Sprintf("http://localhost:8080/users/reset-password/%v", token)
+	err = utils.SendMail(reqDetails.Email, fmt.Sprintf("Password reset link: %v", url))
+	if err != nil{
+		utils.ErrorJSON(c, 500, "unable to send mail", "error sending password reset link", err)
+		return
+	}
+
+	c.IndentedJSON(200, utils.MessageObj("password reset link sent!!!"))
+}
+
+
+// resetPasswordConfirm
+// confirms the token from the previous request
+// updates password and deletes token
+func(cfg *apiConfig) resetPasswordConfirm(c *gin.Context){
+	var reqDetails struct{
+		NewPassword	string `json:"new_password" binding:"required"` 
+	}
+
+	err := c.BindJSON(&reqDetails)
+	if err != nil{
+		utils.ErrorJSON(c, 400, utils.RequestBodyError, utils.JSONError, err)
+		return
+	}
+
+	tempToken := c.Param("token")
+
+	token, err := cfg.DB.GetUserToken(context.Background(), tempToken)
+	if err != nil{
+		utils.ErrorJSON(c, 500, utils.DatabaseError, utils.InternalError, err)
+		return 
+	}else if err == sql.ErrNoRows{
+		c.IndentedJSON(400, gin.H{"msg":"invalid token"})
+	}
+
+	if token.ExpiresAt.Before(time.Now()){
+		_ = cfg.DB.DeleteToken(c, token.Token)
+		utils.ErrorJSON(c, 400, "expired reset token", "invalid/expired token", nil)
+		return
+	}
+
+	hashedPass, err := utils.HashPassword(reqDetails.NewPassword)
+	if err != nil{
+		utils.ErrorJSON(c, 500, utils.ParsingError, utils.InternalError, err)
+		return
+	}
+
+	err = cfg.DB.UpdateUserPassword(context.Background(), db.UpdateUserPasswordParams{
+		ID: token.UserID,
+		PasswordHash: hashedPass,
+	})
+	if err != nil{
+		utils.ErrorJSON(c, 500, utils.DatabaseError, utils.InternalError, err)
+		return
+	}
+
+	err = cfg.DB.DeleteToken(c, token.Token)
+	if err != nil{
+		utils.ErrorJSON(c, 500, utils.DatabaseError, utils.InternalError, err)
+		return
+	}
+
+	c.IndentedJSON(200, utils.MessageObj("password updation success !!!"))
 }

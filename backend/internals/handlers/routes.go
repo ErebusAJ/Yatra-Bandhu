@@ -51,4 +51,9 @@ func RegisterRoutes(r *gin.Engine) {
 		protected.POST("/travel-details", apiCfg.addTravelDetails)
 		protected.GET("/travel-details", apiCfg.getUserPlansDetails)
 	}
+
+	// User Password Reset Routes
+	r.POST("v1/user/password-reset", apiCfg.resetPasswordRequest)
+	r.POST("v1/user/password-reset/:token", apiCfg.resetPasswordConfirm)
+
 }

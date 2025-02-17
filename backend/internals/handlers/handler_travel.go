@@ -29,7 +29,7 @@ func(cfg *apiConfig) addTravelDetails(c *gin.Context){
 	}
 
 	// Check if date in right format 
-	pattern := `^\d{4}-\d{2}-\d{2}$`
+	pattern := `^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$`
 	re, err := regexp.Compile(pattern)
 	if err != nil{
 		utils.ErrorJSON(c, 500, utils.ParsingError, utils.InternalError, err)
