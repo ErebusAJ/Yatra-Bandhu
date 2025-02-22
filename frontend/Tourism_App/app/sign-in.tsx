@@ -6,95 +6,108 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ResizeMode } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
+import { router } from "expo-router";
 
 const SignIn = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  // Function to handle login
   const handleLogin = () => {
-    console.log("Login button clicked!");
+    if (!username || !password) {
+      Alert.alert("Error", "Please enter both username and password!");
+      return;
+    }
+
+    console.log("Logging in with:", username, password);
+
+    // Simulated API response
+    setTimeout(() => {
+      if (username === "testuser" && password === "password123") {
+        console.log("Login Successful!");
+        router.push("/homepage"); // Navigate to dashboard after login
+      } else {
+        Alert.alert("Error", "Invalid username or password!");
+        console.log("Invalid credentials!");
+      }
+    }, 1000);
   };
 
   const handleGoogleLogin = () => {
     console.log("Google Sign-In clicked!");
   };
 
-  const handleRegisterLink = () => {
-    console.log("Navigate to Register screen");
-  };
-
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Image
-        source={require("../assets/images/orangebg.jpg")}
-        style={styles.bgImage}
-        resizeMode={ResizeMode.COVER}
-      />
-
-      <View style={styles.logoContainer}>
-        <Image
-          source={require("../assets/images/icon.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      </View>
-
-      <BlurView intensity={100} style={styles.blurContainer}>
-        <View style={styles.formContainer}>
-          <Text style={styles.loginTitle}>Login</Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            value={username}
-            onChangeText={(text) => setUsername(text)}
-            placeholderTextColor="#fff"
+    <LinearGradient
+      colors={["#fff", "rgba(250, 177, 114, 0.71)"]}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require("../assets/images/icon.png")}
+            style={styles.logo}
+            resizeMode="contain"
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-            placeholderTextColor="#fff"
-            secureTextEntry
-          />
-
-          <Text style={styles.orText}>Or sign in with</Text>
-
-          <TouchableOpacity
-            style={styles.googleButton}
-            onPress={handleGoogleLogin}
-          >
-            <Image
-              source={require("../assets/images/google_icon.png")}
-              style={styles.googleIcon}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <LinearGradient
-              colors={["#fdb44b", "#fdb44b"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.button}
-            >
-              <Text style={styles.buttonText}>Login</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={handleRegisterLink}>
-            <Text style={styles.registerLink}>
-              Don't have an account? Register
-            </Text>
-          </TouchableOpacity>
         </View>
-      </BlurView>
-    </SafeAreaView>
+
+        <BlurView intensity={100} style={styles.blurContainer}>
+          <View style={styles.formContainer}>
+            <Text style={styles.loginTitle}>Login</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              value={username}
+              onChangeText={setUsername}
+              placeholderTextColor="#fff"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              placeholderTextColor="#fff"
+              secureTextEntry
+            />
+
+            <Text style={styles.orText}>Or sign in with</Text>
+
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={handleGoogleLogin}
+            >
+              <Image
+                source={require("../assets/images/google_icon.png")}
+                style={styles.googleIcon}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+              <LinearGradient
+                colors={["#fdb44b", "#fdb44b"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>Login</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.push("/register")}>
+              <Text style={styles.registerLink}>
+                Don't have an account? Register
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </BlurView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
@@ -127,7 +140,7 @@ const styles = StyleSheet.create({
   formContainer: {
     width: "100%",
     padding: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderRadius: 15,
     alignItems: "center",
   },

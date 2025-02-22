@@ -11,6 +11,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import Taskbar from "./components/taskbar";
+import { router } from "expo-router";
+
 const Profile = ({ navigation }) => {
   const [profileImage, setProfileImage] = useState(
     require("../assets/images/default-avatar.png")
@@ -20,11 +23,6 @@ const Profile = ({ navigation }) => {
 
   const toggleNotifications = () => setIsNotificationsEnabled((prev) => !prev);
   const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
-
-  const handleEditProfile = () => {
-    console.log("Edit Profile Clicked!");
-    navigation.navigate("EditProfile"); // Navigate to Edit Profile screen
-  };
 
   const handleLogout = () => {
     console.log("Logout Clicked!");
@@ -45,72 +43,67 @@ const Profile = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Image
-        source={require("../assets/images/orange2bg.jpg")}
-        style={styles.backgroundImage}
-      />
-
-      {/* Profile Image */}
-      <View style={styles.profileImageContainer}>
-        <TouchableOpacity onPress={pickImage} style={{ position: "relative" }}>
+    <LinearGradient
+      colors={["#fff", "rgba(250, 177, 114, 0.71)"]}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={styles.container}>
+        <View style={styles.profileImageContainer}>
           <Image source={profileImage} style={styles.profileImage} />
-          <View style={styles.editIconContainer}>
-            <Icon name="edit" size={20} color="#fff" />
-          </View>
-        </TouchableOpacity>
-        <Text style={styles.username}>John Doe</Text>
-        <Text style={styles.email}>johndoe@example.com</Text>
-        <Text style={styles.phone}>+1 234 567 890</Text>
-      </View>
 
-      {/* Buttons & Settings */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleEditProfile}>
-          <LinearGradient
-            colors={["#fdb44b", "#fdb44b"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+          <Text style={styles.username}>John Doe</Text>
+          <Text style={styles.email}>johndoe@example.com</Text>
+          <Text style={styles.phone}>+1 234 567 890</Text>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
             style={styles.button}
+            onPress={() => router.push("/profile-edit")}
           >
-            <Text style={styles.buttonText}>Edit Profile</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+            <LinearGradient
+              colors={["#fdb44b", "#fdb44b"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>Edit Profile</Text>
+            </LinearGradient>
+          </TouchableOpacity>
 
-        {/* Settings Section */}
-        <View style={styles.settingsContainer}>
-          <View style={styles.settingsRowTransparent}>
-            <Text style={styles.settingsText}>Enable Notifications</Text>
-            <Switch
-              value={isNotificationsEnabled}
-              onValueChange={toggleNotifications}
-            />
+          <View style={styles.settingsContainer}>
+            <View style={styles.settingsRowTransparent}>
+              <Text style={styles.settingsText}>Enable Notifications</Text>
+              <Switch
+                value={isNotificationsEnabled}
+                onValueChange={toggleNotifications}
+              />
+            </View>
+
+            <View style={styles.settingsRowTransparent}>
+              <Text style={styles.settingsText}>Dark Mode</Text>
+              <Switch value={isDarkMode} onValueChange={toggleDarkMode} />
+            </View>
+
+            <TouchableOpacity style={styles.settingsButton}>
+              <Text style={styles.settingsText}>Privacy & Security</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.settingsButton}>
+              <Text style={styles.settingsText}>Language</Text>
+            </TouchableOpacity>
           </View>
-
-          <View style={styles.settingsRowTransparent}>
-            <Text style={styles.settingsText}>Dark Mode</Text>
-            <Switch value={isDarkMode} onValueChange={toggleDarkMode} />
-          </View>
-
-          <TouchableOpacity style={styles.settingsButton}>
-            <Text style={styles.settingsText}>Privacy & Security</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.settingsButton}>
-            <Text style={styles.settingsText}>Language</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.settingsButton}>
-            <Text style={styles.settingsText}>Help & Support</Text>
-          </TouchableOpacity>
         </View>
 
         {/* Logout Button */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+
+      {/* Taskbar at the bottom */}
+      <Taskbar />
+    </LinearGradient>
   );
 };
 
@@ -119,11 +112,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     padding: 20,
-  },
-  backgroundImage: {
-    position: "absolute",
-    width: "120%",
-    height: "120%",
   },
   profileImageContainer: {
     alignItems: "center",
@@ -144,13 +132,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 5,
   },
-  editIcon: {
-    position: "absolute",
-    bottom: 5,
-    right: 5,
-    width: 20,
-    height: 20,
-  },
   username: {
     fontSize: 24,
     fontWeight: "bold",
@@ -170,6 +151,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 30,
     width: "80%",
+    flexGrow: 1,
   },
   button: {
     paddingVertical: 12,
@@ -191,7 +173,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(225, 148, 86, 0.29)",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 25,
@@ -202,7 +184,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 25,
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(225, 148, 86, 0.29)",
     width: "100%",
     marginBottom: 10,
   },
@@ -212,17 +194,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   logoutButton: {
+    position: "absolute",
+    bottom: 80,
     paddingVertical: 12,
     borderRadius: 25,
     alignItems: "center",
-    backgroundColor: "rgba(181, 16, 16, 0.25)",
-    width: "100%",
-    borderWidth: 3,
+    justifyContent: "center",
+    backgroundColor: "rgba(181, 16, 16, 0.8)",
+    width: "50%",
+    borderWidth: 2,
     borderColor: "#be3144",
+    alignSelf: "center",
   },
   logoutText: {
     fontSize: 18,
-    color: "#be3144",
+    color: "#fff",
     fontWeight: "bold",
   },
 });
