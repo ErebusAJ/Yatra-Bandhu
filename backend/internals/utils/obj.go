@@ -18,4 +18,5 @@ const(
 	InternalError		=	"internal error"
 	NotFoundError		=	"not found"
 	UnauthorizedError	=	"unauthorized" 
+	EndpointError		= 	"malformed url"
 )

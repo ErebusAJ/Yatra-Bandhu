@@ -235,7 +235,7 @@ func(cfg *apiConfig) resetPasswordRequest(c *gin.Context){
 	}
 
 	// Send Email with Reset Link
-	url := fmt.Sprintf("http://localhost:8080/users/reset-password/%v", token)
+	url := fmt.Sprintf("http://localhost:8080/v1/user/password-reset/%v", token)
 	err = utils.SendMail(reqDetails.Email, fmt.Sprintf("Password reset link: %v", url))
 	if err != nil{
 		utils.ErrorJSON(c, 500, "unable to send mail", "error sending password reset link", err)

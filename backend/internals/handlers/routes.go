@@ -50,6 +50,18 @@ func RegisterRoutes(r *gin.Engine) {
 		// Travel Plan Details Routes
 		protected.POST("/travel-details", apiCfg.addTravelDetails)
 		protected.GET("/travel-details", apiCfg.getUserPlansDetails)
+
+		// Travel Groups and Members
+		protected.POST("/travel-group", apiCfg.createGroup)
+		protected.PUT("/travel-group/:groupID", apiCfg.updateGroup)
+		protected.GET("/travel-group/:groupID", apiCfg.getGroupMembersDetails)
+		protected.DELETE("/travel-group/:groupID", apiCfg.deleteGroupByID)
+		protected.GET("/travel-group/", apiCfg.getUsersGroups)
+
+		protected.POST("/travel-group/:groupID/member/:userID", apiCfg.addGroupMember)
+		protected.GET("/travel-group/:groupID/member", apiCfg.getGroupMembersDetails)
+		protected.DELETE("/travel-group/:groupID/member/:userID", apiCfg.deleteGroupMember)
+
 	}
 
 	// User Password Reset Routes

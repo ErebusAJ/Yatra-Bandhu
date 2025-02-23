@@ -20,6 +20,24 @@ type PasswordToken struct {
 	UpdatedAt sql.NullTime
 }
 
+type TravelGroup struct {
+	ID          uuid.UUID
+	CreatorID   uuid.UUID
+	Name        string
+	Description string
+	PlanID      uuid.UUID
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+}
+
+type TravelGroupsMember struct {
+	ID        uuid.UUID
+	GroupID   uuid.UUID
+	UserID    uuid.UUID
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+}
+
 type TravelPlanDetail struct {
 	ID        uuid.UUID
 	CreatorID uuid.UUID
