@@ -17,7 +17,7 @@ const Taskbar = () => {
 
   const tabs = [
     { name: "home", icon: "home", route: "/homepage" },
-    { name: "Connect", icon: "user-plus", route: "/connect" },
+    { name: "Connect", icon: "user-plus", route: "/connectMenu" },
     { name: "AI Planner", icon: "route", route: "/ai-planner" },
     { name: "Social", icon: "comments", route: "/socials" },
     { name: "profile", icon: "user-circle", route: "/profile" },
