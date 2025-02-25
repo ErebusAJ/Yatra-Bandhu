@@ -20,13 +20,13 @@ const topDeals = [
     id: "1",
     title: "Paris Getaway",
     price: "$999",
-    image: require("../assets/images/paris.jpeg"),
+    image: require("../assets/images/paris.jpg"),
   },
   {
     id: "2",
     title: "Bali Adventure",
     price: "$799",
-    image: require("../assets/images/bali.jpeg"),
+    image: require("../assets/images/bali.jpg"),
   },
   {
     id: "3",
