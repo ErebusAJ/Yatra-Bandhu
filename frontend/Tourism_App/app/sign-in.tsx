@@ -12,45 +12,71 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ Import AsyncStorage
+
+const API_BASE_URL = "https://yatra-bandhu-aj.onrender.com/v1"; // ✅ Replace with actual API URL
 
 const SignIn = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Function to handle login
-  const handleLogin = () => {
-    if (!username || !password) {
-      Alert.alert("Error", "Please enter both username and password!");
+  // ✅ Function to handle login
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "Please enter both email and password!");
       return;
     }
 
-    console.log("Logging in with:", username, password);
+    try {
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          password: password.trim(),
+        }),
+      });
 
-    // Simulated API response
-    setTimeout(() => {
-      if (username === "testuser" && password === "password123") {
-        console.log("Login Successful!");
-        router.push("/homepage"); // Navigate to dashboard after login
-      } else {
-        Alert.alert("Error", "Invalid username or password!");
-        console.log("Invalid credentials!");
+      const responseText = await response.text();
+      console.log("Raw Response:", responseText);
+
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log("Parsed JSON Response:", data);
+      } catch (jsonError) {
+        console.error("JSON Parse Error:", jsonError);
+        Alert.alert("Error", "Unexpected response from the server.");
+        return;
       }
-    }, 1000);
-  };
 
-  const handleGoogleLogin = () => {
-    console.log("Google Sign-In clicked!");
+      if (response.ok) {
+        const userName = data.user?.username || "User";
+        const token = data.token; // 🔥 Extract token
+
+        if (token) {
+          await AsyncStorage.setItem("token", data.token);
+          console.log("Token saved:", data.token); // ✅ Debugging: Check if token is stored
+        }
+
+        await AsyncStorage.setItem("userName", userName); // ✅ Store username
+        Alert.alert("Success", `Welcome, ${userName}!`);
+        router.push("/homepage");
+      } else {
+        Alert.alert("Error", data.message || "Invalid credentials!");
+      }
+    } catch (error) {
+      console.error("Network Error:", error);
+      Alert.alert("Error", "Network error. Please try again later.");
+    }
   };
 
   return (
-    <LinearGradient
-      colors={["#fff", "rgba(250, 177, 114, 0.71)"]}
-      style={{ flex: 1 }}
-    >
+    <LinearGradient colors={["#113f67", "#79c2d0", "#fff"]} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.logoContainer}>
           <Image
-            source={require("../assets/images/icon.png")}
+            source={require("../assets/images/icon_white.png")}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -58,14 +84,15 @@ const SignIn = () => {
 
         <BlurView intensity={100} style={styles.blurContainer}>
           <View style={styles.formContainer}>
-            <Text style={styles.loginTitle}>Login</Text>
+            <Text style={styles.loginTitle}>Welcome Back, Traveler!</Text>
 
             <TextInput
               style={styles.input}
-              placeholder="Username"
-              value={username}
-              onChangeText={setUsername}
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
               placeholderTextColor="#fff"
+              keyboardType="email-address"
             />
             <TextInput
               style={styles.input}
@@ -76,21 +103,9 @@ const SignIn = () => {
               secureTextEntry
             />
 
-            <Text style={styles.orText}>Or sign in with</Text>
-
-            <TouchableOpacity
-              style={styles.googleButton}
-              onPress={handleGoogleLogin}
-            >
-              <Image
-                source={require("../assets/images/google_icon.png")}
-                style={styles.googleIcon}
-              />
-            </TouchableOpacity>
-
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
               <LinearGradient
-                colors={["#fdb44b", "#fdb44b"]}
+                colors={["#113f67", "#79c2d0"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.button}
@@ -106,17 +121,18 @@ const SignIn = () => {
             </TouchableOpacity>
           </View>
         </BlurView>
+
+        <Image
+          source={require("../assets/images/login-loon.png")}
+          style={styles.loon}
+          resizeMode="contain"
+        />
       </SafeAreaView>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  bgImage: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-  },
   logoContainer: {
     position: "absolute",
     top: "7%",
@@ -140,15 +156,15 @@ const styles = StyleSheet.create({
   formContainer: {
     width: "100%",
     padding: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     borderRadius: 15,
     alignItems: "center",
   },
   loginTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#fff",
-    marginBottom: 20,
+    marginBottom: 30,
   },
   input: {
     height: 50,
@@ -161,32 +177,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
   },
-  orText: {
-    fontSize: 18,
-    color: "#fff",
-    marginVertical: 10,
-  },
-  googleButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 30,
-    marginBottom: 15,
-    width: "50%",
-    justifyContent: "center",
-  },
-  googleIcon: {
-    width: 25,
-    height: 25,
-    borderRadius: 100,
-  },
-  googleText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#000",
-  },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -197,7 +187,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 20,
     color: "#fff",
-    fontWeight: "400",
+    fontWeight: "500",
     textAlign: "center",
   },
   registerLink: {
@@ -205,6 +195,13 @@ const styles = StyleSheet.create({
     color: "#fff",
     marginTop: 10,
     textDecorationLine: "underline",
+  },
+  loon: {
+    top: "75%",
+    alignSelf: "center",
+    alignItems: "center",
+    height: 200,
+    marginRight: 90,
   },
 });
 

@@ -10,56 +10,74 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
+import { router } from "expo-router";
 
-const Register = ({ navigation }) => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+const Register = () => {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
   const handleRegister = async () => {
-    if (!firstName || !lastName || !email || !password) {
+    if (!fullName || !email || !age || !phone || !password) {
       alert("Please fill in all fields!");
       return;
     }
 
-    try {
-      const response = await fetch("https://your-api-url.com/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          password,
-        }),
-      });
+    // ✅ Prepare request body with proper formatting
+    const requestBody = {
+      name: fullName.trim(),
+      email: email.trim(),
+      age: Number(age), // Convert age to a number
+      phone_no: phone.trim(),
+      password: password.trim(),
+    };
 
-      const data = await response.json();
+    console.log("🔹 Sending Request Body:", JSON.stringify(requestBody));
+
+    try {
+      const response = await fetch(
+        "https://yatra-bandhu-aj.onrender.com/v1/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      const responseText = await response.text();
+      console.log("🔹 Raw Response:", responseText);
+
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log("🔹 Parsed JSON Response:", data);
+      } catch (error) {
+        console.error("🔴 JSON Parse Error:", error);
+        data = { message: "Invalid JSON response from server" };
+      }
 
       if (response.ok) {
-        alert("Registration successful!");
-        navigation.navigate("SignIn");
+        alert("✅ Registration successful!");
+        router.push("/sign-in");
       } else {
-        alert(data.message || "Registration failed. Please try again.");
+        alert(`⚠️ Registration failed: ${data.message || "Please try again."}`);
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong. Please try again later.");
+      console.error("🔴 Network Error:", error);
+      alert("⚠️ Something went wrong. Please try again later.");
     }
   };
 
   return (
-    <LinearGradient
-      colors={["#fff", "rgba(250, 177, 114, 0.71)"]}
-      style={{ flex: 1 }}
-    >
+    <LinearGradient colors={["#113f67", "#79c2d0", "#fff"]} style={{ flex: 1 }}>
       <SafeAreaView style={styles.container}>
         <View style={styles.logoContainer}>
           <Image
-            source={require("../assets/images/icon.png")}
+            source={require("../assets/images/icon_white.png")}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -67,21 +85,13 @@ const Register = ({ navigation }) => {
 
         <BlurView intensity={100} style={styles.blurContainer}>
           <View style={styles.formContainer}>
-            <Text style={styles.registerTitle}>Create Account</Text>
+            <Text style={styles.registerTitle}>Join the Journey🛫</Text>
 
             <TextInput
               style={styles.input}
-              placeholder="First Name"
-              value={firstName}
-              onChangeText={setFirstName}
-              placeholderTextColor="#fff"
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Last Name"
-              value={lastName}
-              onChangeText={setLastName}
+              placeholder="Full Name"
+              value={fullName}
+              onChangeText={setFullName}
               placeholderTextColor="#fff"
             />
 
@@ -96,6 +106,24 @@ const Register = ({ navigation }) => {
 
             <TextInput
               style={styles.input}
+              placeholder="Age"
+              value={age}
+              onChangeText={setAge}
+              placeholderTextColor="#fff"
+              keyboardType="numeric"
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              value={phone}
+              onChangeText={setPhone}
+              placeholderTextColor="#fff"
+              keyboardType="phone-pad"
+            />
+
+            <TextInput
+              style={styles.input}
               placeholder="Password"
               value={password}
               onChangeText={setPassword}
@@ -105,7 +133,7 @@ const Register = ({ navigation }) => {
 
             <TouchableOpacity style={styles.button} onPress={handleRegister}>
               <LinearGradient
-                colors={["#fdb44b", "#fdb44b"]}
+                colors={["#113f67", "#79c2d0"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.button}
@@ -121,9 +149,7 @@ const Register = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   logoContainer: {
     position: "absolute",
     top: "7%",
@@ -132,10 +158,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 3,
   },
-  logo: {
-    width: 200,
-    height: 200,
-  },
+  logo: { width: 200, height: 200 },
   blurContainer: {
     position: "absolute",
     top: "35%",
@@ -147,9 +170,13 @@ const styles = StyleSheet.create({
   formContainer: {
     width: "100%",
     padding: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     borderRadius: 15,
     alignItems: "center",
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 2,
   },
   registerTitle: {
     fontSize: 28,

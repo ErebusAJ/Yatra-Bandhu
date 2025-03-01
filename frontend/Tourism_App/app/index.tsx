@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -7,14 +7,11 @@ import {
   SafeAreaView,
   Image,
 } from "react-native";
-import { Video, ResizeMode } from "expo-av";
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link, router } from "expo-router";
-import { navigate } from "expo-router/build/global-state/routing";
-import { NavigationProp } from "@react-navigation/native";
+import { router } from "expo-router";
 
-const GetStartedScreen = ({ navigation }) => {
+const GetStartedScreen = () => {
   const [fontsLoaded] = useFonts({
     "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
     "Montserrat-Medium": require("../assets/fonts/Montserrat-Medium.ttf"),
@@ -22,24 +19,34 @@ const GetStartedScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Background Image */}
       <Image
-        source={require("../assets/images/getStarted.png")}
+        source={require("../assets/images/bg5-start.jpg")}
         style={styles.base}
       />
+
+      {/* Overlay */}
+      <View style={styles.overlay} />
+
+      {/* Logo */}
       <Image
-        source={require("../assets/images/icon.png")}
+        source={require("../assets/images/icon_white.png")}
         style={styles.logo}
       />
+
+      {/* Subtitle */}
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitle}>A New Way To Travel</Text>
       </View>
+
+      {/* Button */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
           onPress={() => router.push("/sign-in")}
         >
           <LinearGradient
-            colors={["#fdb44b", "#fdb44b"]}
+            colors={["#fdb44b", "#113f67"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.button}
@@ -66,14 +73,23 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+  },
   logo: {
     position: "absolute",
-    top: 123,
-    left: 57,
-    height: 330,
-    width: 330,
+    top: "6%",
+    height: 200,
+    width: 200,
     zIndex: 2,
     alignItems: "center",
+    alignSelf: "center",
+    left: "27%",
   },
   subtitleContainer: {
     position: "absolute",
@@ -84,7 +100,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 32,
     fontWeight: "400",
-    color: "#000",
+    color: "#fff", // White color for better contrast
     marginBottom: 0,
   },
   buttonContainer: {
@@ -104,8 +120,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 25,
-    color: "#000",
-    fontWeight: "400",
+    color: "#fff",
+    fontWeight: "500",
     textAlign: "center",
   },
 });

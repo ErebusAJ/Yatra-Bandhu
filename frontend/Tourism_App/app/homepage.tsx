@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,8 +11,8 @@ import {
   Dimensions,
 } from "react-native";
 import Taskbar from "./components/taskbar";
-
-const userName = "Aryan";
+import { LinearGradient } from "expo-linear-gradient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const windowWidth = Dimensions.get("window").width;
 
 const topDeals = [
@@ -85,6 +85,54 @@ const recommendedPlaces = [
 ];
 
 const HomeScreen = ({ navigation }) => {
+  const [userName, setUserName] = useState("Traveler"); // Default name
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        console.log("Retrieved Token:", token); // ✅ Debug log
+
+        if (!token) {
+          console.log("No token found.");
+          return;
+        }
+
+        const response = await fetch(
+          "https://yatra-bandhu-aj.onrender.com/auth/user",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const data = await response.json();
+        console.log("API Response:", data); // ✅ Debugging API response
+
+        if (response.ok) {
+          setUser({
+            name: data.Name || "User",
+          });
+
+          await AsyncStorage.setItem("user", JSON.stringify(data));
+        } else {
+          console.error("Error fetching user:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
+
   const CARD_WIDTH = windowWidth - 40;
 
   const renderRecommendedItem = ({ item, index }) => (
@@ -118,16 +166,27 @@ const HomeScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.greetingContainer}>
         <View style={styles.greetingLeft}>
-          <Text style={styles.welcomeText}>Hi, {userName} 👋</Text>
+          <Text style={styles.welcomeText}>
+            Hi, {user?.name ?? "Traveler"} 👋
+          </Text>
+
           <Text style={styles.subques}>
             Excited to embark on a new adventure?
           </Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-          <Image
-            source={require("../assets/images/rank_profile.png")}
-            style={styles.profileIcon}
-          />
+
+        <TouchableOpacity
+          onPress={() => router.push("/pro")}
+          activeOpacity={0.8}
+        >
+          <LinearGradient
+            colors={["#feffdf", "#adf7d1", "#defcf9", "#668ba4"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.proButton}
+          >
+            <Text style={styles.text}>Go Premium</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
 
@@ -182,6 +241,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  proButton: {
+    borderRadius: 20,
+    paddingVertical: 4,
+    paddingHorizontal: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 6,
+    borderColor: "#dc2f2f",
+    borderWidth: 2,
+    borderCurve: "circular",
+    top: 5,
+  },
+  text: {
+    color: "#27296d",
+    fontSize: 12,
+    fontWeight: "bold",
+    marginRight: 4,
+    marginLeft: 4,
   },
   greetingContainer: {
     paddingVertical: 30,
@@ -311,7 +389,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   ratingContainer: {
-    backgroundColor: "#fdb44b",
+    backgroundColor: "#42b883",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -334,7 +412,7 @@ const styles = StyleSheet.create({
   recommendedPrice: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#fdb44b",
+    color: "#38598b",
   },
   recommendedDuration: {
     color: "#666",
