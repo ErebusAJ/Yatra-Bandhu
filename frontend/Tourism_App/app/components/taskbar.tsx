@@ -19,8 +19,8 @@ const Taskbar = () => {
     { name: "home", icon: "home", route: "/homepage" },
     { name: "Connect", icon: "user-plus", route: "/connectMenu" },
     { name: "AI Planner", icon: "route", route: "/planner" },
-    { name: "Social", icon: "comments", route: "/socials" },
-    { name: "profile", icon: "user-circle", route: "/profile" },
+    { name: "Social", icon: "icons", route: "/socials" },
+    { name: "chat", icon: "comments", route: "/chat" },
   ];
 
   return (

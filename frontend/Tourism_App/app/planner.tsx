@@ -205,6 +205,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     width: 200,
+    bottom: 35,
   },
   buttonText: {
     color: "#fff",

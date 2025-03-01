@@ -13,6 +13,7 @@ import {
 import Taskbar from "./components/taskbar";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
 const windowWidth = Dimensions.get("window").width;
 
 const topDeals = [
@@ -176,17 +177,11 @@ const HomeScreen = ({ navigation }) => {
         </View>
 
         <TouchableOpacity
-          onPress={() => router.push("/pro")}
-          activeOpacity={0.8}
+          onPress={() => router.push("/profile")}
+          activeOpacity={0.7}
+          style={styles.profileButton}
         >
-          <LinearGradient
-            colors={["#feffdf", "#adf7d1", "#defcf9", "#668ba4"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.proButton}
-          >
-            <Text style={styles.text}>Go Premium</Text>
-          </LinearGradient>
+          <Ionicons name="person-circle-outline" size={40} color="#27296d" />
         </TouchableOpacity>
       </View>
 
@@ -260,6 +255,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginRight: 4,
     marginLeft: 4,
+  },
+  profileButton: {
+    borderRadius: 50,
+    padding: 5,
+    alignItems: "center",
+    justifyContent: "center",
   },
   greetingContainer: {
     paddingVertical: 30,

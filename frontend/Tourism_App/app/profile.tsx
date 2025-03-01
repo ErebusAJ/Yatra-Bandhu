@@ -107,7 +107,7 @@ const Profile = ({ navigation }) => {
   };
 
   return (
-    <LinearGradient colors={["#113f67", "#79c2d0", "#fff"]} style={{ flex: 1 }}>
+    <LinearGradient colors={["#fff", "#79c2d0", "#113f67"]} style={{ flex: 1 }}>
       <SafeAreaView style={styles.container}>
         {loading ? (
           <ActivityIndicator size="large" color="#113f67" />
@@ -134,21 +134,42 @@ const Profile = ({ navigation }) => {
                   <Text style={styles.buttonText}>Edit Profile</Text>
                 </LinearGradient>
               </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.pro}
+                onPress={() => router.push("/pro")}
+              >
+                <LinearGradient
+                  colors={[
+                    "#feffdf",
+                    "#adf7d1",
+                    "#defcf9",
+                    "#668ba4",
+                    "#feffdf",
+                    "#adf7d1",
+                    "#defcf9",
+                    "#668ba4",
+
+                    "#feffdf",
+                    "#adf7d1",
+                    "#defcf9",
+                    "#668ba4",
+                    "#feffdf",
+                    "#adf7d1",
+                    "#defcf9",
+                    "#668ba4",
+                  ]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.pro}
+                >
+                  <Text style={styles.protext}>Go Premium</Text>
+                </LinearGradient>
+              </TouchableOpacity>
 
               <View style={styles.settingsContainer}>
-                <View style={styles.settingsRowTransparent}>
-                  <Text style={styles.settingsText}>Enable Notifications</Text>
-                  <Switch
-                    value={isNotificationsEnabled}
-                    onValueChange={toggleNotifications}
-                  />
-                </View>
-
-                <View style={styles.settingsRowTransparent}>
-                  <Text style={styles.settingsText}>Dark Mode</Text>
-                  <Switch value={isDarkMode} onValueChange={toggleDarkMode} />
-                </View>
-
+                <TouchableOpacity style={styles.settingsButton}>
+                  <Text style={styles.settingsText}>Notifications</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.settingsButton}>
                   <Text style={styles.settingsText}>Privacy & Security</Text>
                 </TouchableOpacity>
@@ -225,10 +246,24 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 15,
   },
+  pro: {
+    paddingVertical: 35,
+    borderRadius: 15,
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 15,
+    top: -30,
+  },
   buttonText: {
     fontSize: 18,
     color: "#fff",
     fontWeight: "500",
+  },
+  protext: {
+    fontSize: 22,
+    color: "#000",
+    fontWeight: "500",
+    letterSpacing: 2,
   },
   settingsContainer: {
     width: "100%",
@@ -249,14 +284,15 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 25,
     alignItems: "center",
-    backgroundColor: "rgba(0, 9, 106, 0.23)",
+    backgroundColor: "rgba(9, 18, 116, 0.17)",
     width: "100%",
     marginBottom: 10,
+    top: -105,
   },
   settingsText: {
     fontSize: 18,
-    color: "#333",
-    fontWeight: "bold",
+    color: "white",
+    fontWeight: "500",
   },
   logoutButton: {
     position: "absolute",
