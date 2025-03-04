@@ -156,9 +156,13 @@ const styles = StyleSheet.create({
   formContainer: {
     width: "100%",
     padding: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
     borderRadius: 15,
     alignItems: "center",
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 2,
   },
   loginTitle: {
     fontSize: 24,
