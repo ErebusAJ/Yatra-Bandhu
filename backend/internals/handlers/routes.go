@@ -11,13 +11,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type apiConfig struct{
+type apiConfig struct {
 	DB *db.Queries
 }
 
-
 func RegisterRoutes(r *gin.Engine) {
-	
+
 	// Open up database connection
 	DB, err := utils.ConnectDB()
 	if err != nil {
@@ -34,7 +33,7 @@ func RegisterRoutes(r *gin.Engine) {
 
 	// Load signed key for middleware
 	signedKey := os.Getenv("SIGNED_KEY")
-	if signedKey == ""{
+	if signedKey == "" {
 		log.Printf("error retrieving signed key \n")
 	}
 
@@ -46,7 +45,7 @@ func RegisterRoutes(r *gin.Engine) {
 		protected.GET("/user", apiCfg.getUserByID)
 		protected.PUT("/user", apiCfg.updateUser)
 		protected.DELETE("/user", apiCfg.deleteUser)
-		
+
 		// Travel Plan Details Routes
 		protected.POST("/travel-details", apiCfg.addTravelDetails)
 		protected.GET("/travel-details", apiCfg.getUserPlansDetails)
@@ -60,6 +59,11 @@ func RegisterRoutes(r *gin.Engine) {
 		protected.POST("/travel-group/:groupID/member/:userID", apiCfg.addGroupMember)
 		protected.GET("/travel-group/:groupID/member", apiCfg.getGroupMembersDetails)
 		protected.DELETE("/travel-group/:groupID/member/:userID", apiCfg.deleteGroupMember)
+
+		// requests
+		protected.POST("/travel-group/:groupID/request", apiCfg.sendRequest)
+		protected.GET("/travel-group/:groupID/request", apiCfg.getUserGroupRequest)
+		protected.POST("/travel-group/:groupID/request/:senderID", apiCfg.updateRequest)
 
 	}
 

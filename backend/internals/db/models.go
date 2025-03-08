@@ -38,6 +38,15 @@ type TravelGroupsMember struct {
 	UpdatedAt sql.NullTime
 }
 
+type TravelGroupsRequest struct {
+	ID        uuid.UUID
+	GroupID   uuid.UUID
+	UserID    uuid.UUID
+	Status    string
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+}
+
 type TravelPlanDetail struct {
 	ID        uuid.UUID
 	CreatorID uuid.UUID
