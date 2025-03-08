@@ -14,6 +14,9 @@ import Taskbar from "./components/taskbar";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import { PanResponder, Animated } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
+
 const windowWidth = Dimensions.get("window").width;
 
 const topDeals = [
@@ -136,6 +139,26 @@ const HomeScreen = ({ navigation }) => {
 
   const CARD_WIDTH = windowWidth - 40;
 
+  const windowHeight = Dimensions.get("window").height;
+  const initialPosition = windowHeight / 2; // Start in the middle
+
+  const panY = useState(new Animated.Value(initialPosition))[0];
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: (event, gesture) => {
+      let newY = Math.max(50, Math.min(windowHeight - 100, gesture.moveY));
+      panY.setValue(newY);
+    },
+    onPanResponderRelease: () => {
+      Animated.spring(panY, {
+        toValue: panY._value,
+        useNativeDriver: false,
+      }).start();
+    },
+  });
+
   const renderRecommendedItem = ({ item, index }) => (
     <TouchableOpacity
       style={[
@@ -227,6 +250,23 @@ const HomeScreen = ({ navigation }) => {
           pagingEnabled={true}
         />
       </View>
+      <Animated.View
+        style={[styles.floatingButtonContainer, { top: panY }]}
+        {...panResponder.panHandlers}
+      >
+        <TouchableOpacity
+          style={styles.floatingButton}
+          onPress={() => router.push("/pro")}
+        >
+          <FontAwesome5
+            name="suitcase-rolling"
+            size={24}
+            color="rgb(5, 10, 59)"
+          />
+          <Text style={styles.buttonText}>PRO</Text>
+        </TouchableOpacity>
+      </Animated.View>
+
       <Taskbar />
     </SafeAreaView>
   );
@@ -418,6 +458,31 @@ const styles = StyleSheet.create({
   recommendedDuration: {
     color: "#666",
     fontSize: 14,
+  },
+  floatingButtonContainer: {
+    position: "absolute",
+    right: 10,
+  },
+  floatingButton: {
+    backgroundColor: "#ffa952",
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    borderWidth: 2,
+    borderColor: "rgb(5, 10, 59)",
+  },
+  buttonText: {
+    color: "rgb(5, 10, 59)",
+    fontSize: 14,
+    fontWeight: "bold",
+    marginTop: 2,
   },
 });
 

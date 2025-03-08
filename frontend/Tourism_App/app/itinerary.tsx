@@ -7,18 +7,11 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import { format, differenceInDays, addDays } from "date-fns";
-import { useLocalSearchParams } from "expo-router"; // ✅ Using Expo Router params
-
-// Define type for hotels
-type Hotel = {
-  id: number;
-  name: string;
-  address: string;
-  image: string;
-};
-
+import { useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 const ItineraryScreen = () => {
   const {
     location = "Jaipur",
@@ -26,13 +19,11 @@ const ItineraryScreen = () => {
     endDate = "2025-03-05",
   } = useLocalSearchParams();
 
-  const [description, setDescription] = useState<string>("");
-  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [description, setDescription] = useState("");
+  const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("Fetching hotels for:", location); // ✅ Debugging
-
     setLoading(true);
 
     setTimeout(() => {
@@ -40,7 +31,7 @@ const ItineraryScreen = () => {
         `${location} is a beautiful place known for its rich history, vibrant culture, and stunning landmarks.`
       );
 
-      const hotelData = [
+      setHotels([
         {
           id: 1,
           name: "Hotel Royal",
@@ -62,14 +53,11 @@ const ItineraryScreen = () => {
           image:
             "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/eb/8b/9c/swimming-pool.jpg?w=900&h=500&s=1",
         },
-      ];
-
-      setHotels(hotelData);
+      ]);
       setLoading(false);
     }, 1000);
   }, [location]);
 
-  // Generate Itinerary Days
   const renderItinerary = () => {
     if (!startDate || !endDate) return null;
     const daysCount =
@@ -93,73 +81,85 @@ const ItineraryScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{location}</Text>
+      <ScrollView style={styles.scrollContainer}>
+        <Text style={styles.title}>{location}</Text>
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => router.push("/homepage")}
+        >
+          <Text style={styles.closeButtonText}>✖</Text>
+        </TouchableOpacity>
 
-      {loading ? (
-        <ActivityIndicator size="large" color="#ffa952" />
-      ) : (
-        <>
-          <Text style={styles.description}>{description}</Text>
+        {loading ? (
+          <ActivityIndicator size="large" color="#ffa952" />
+        ) : (
+          <>
+            <Text style={styles.description}>{description}</Text>
+            <Text style={styles.sectionTitle}>Places to Stay</Text>
 
-          {/* 🏨 Hotels Section */}
-          <Text style={styles.sectionTitle}>Places to Stay</Text>
+            {hotels.length === 0 ? (
+              <Text style={styles.noHotelsText}>No hotels available.</Text>
+            ) : (
+              <FlatList
+                data={hotels}
+                horizontal
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.hotelCard}>
+                    <Image
+                      source={{ uri: item.image }}
+                      style={styles.hotelImage}
+                    />
+                    <View style={styles.hotelInfo}>
+                      <Text style={styles.hotelName}>{item.name}</Text>
+                      <Text style={styles.hotelAddress}>{item.address}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.flatListContainer}
+              />
+            )}
 
-          {hotels.length === 0 ? (
-            <Text style={styles.noHotelsText}>No hotels available.</Text>
-          ) : (
-            <FlatList
-              data={hotels}
-              horizontal
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.hotelCard}>
-                  <Image
-                    source={{ uri: item.image }}
-                    style={styles.hotelImage}
-                    defaultSource={{
-                      uri: "https://source.unsplash.com/150x100/?hotel",
-                    }}
-                  />
-                  <View style={styles.hotelInfo}>
-                    <Text style={styles.hotelName}>{item.name}</Text>
-                    <Text style={styles.hotelAddress}>{item.address}</Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.flatListContainer}
-            />
-          )}
+            <Text style={styles.sectionTitle}>Your Itinerary</Text>
+            {renderItinerary()}
+          </>
+        )}
+      </ScrollView>
 
-          {/* 📆 Itinerary Section */}
-          <Text style={styles.sectionTitle}>Your Itinerary</Text>
-          {renderItinerary()}
-        </>
-      )}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Save</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Post</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 export default ItineraryScreen;
 
-// 🔥 **Styles** 🔥
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "center",
-  },
+  container: { flex: 1, backgroundColor: "#fff" },
+  scrollContainer: { flex: 1, padding: 20 },
+  title: { fontSize: 28, fontWeight: "bold", textAlign: "center" },
   description: {
     fontSize: 16,
     color: "#555",
     textAlign: "center",
     marginBottom: 20,
+  },
+  closeButton: {
+    position: "absolute",
+    flex: 1,
+    alignItems: "flex-end",
+    alignSelf: "flex-end",
+  },
+  closeButtonText: {
+    color: "#000",
+    fontSize: 16,
   },
   sectionTitle: {
     fontSize: 22,
@@ -173,39 +173,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
-  flatListContainer: {
-    paddingHorizontal: 10,
-    paddingBottom: 10,
-  },
+  flatListContainer: { paddingHorizontal: 10, paddingBottom: 10 },
   hotelCard: {
     width: 180,
     borderRadius: 10,
     backgroundColor: "#f9f9f9",
     padding: 10,
     marginRight: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
     alignItems: "center",
   },
-  hotelImage: {
-    width: "100%",
-    height: 120,
-    borderRadius: 8,
-    marginBottom: 5,
-  },
-  hotelInfo: {
-    alignItems: "center",
-  },
-  hotelName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  hotelAddress: {
-    fontSize: 14,
-    color: "#777",
-    textAlign: "center",
-  },
+  hotelImage: { width: "100%", height: 120, borderRadius: 8, marginBottom: 5 },
+  hotelInfo: { alignItems: "center" },
+  hotelName: { fontSize: 16, fontWeight: "bold", textAlign: "center" },
+  hotelAddress: { fontSize: 14, color: "#777", textAlign: "center" },
   dayContainer: {
     marginVertical: 15,
     padding: 10,
@@ -214,18 +194,22 @@ const styles = StyleSheet.create({
     borderLeftWidth: 5,
     borderColor: "#ffa952",
   },
-  dayTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 5,
+  dayTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 5 },
+  dayDescription: { fontSize: 16, color: "#555" },
+  separator: { height: 1, backgroundColor: "#ddd", marginVertical: 10 },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 15,
+    backgroundColor: "#fff",
   },
-  dayDescription: {
-    fontSize: 16,
-    color: "#555",
+  button: {
+    backgroundColor: "#ffa952",
+    padding: 15,
+    borderRadius: 10,
+    flex: 1,
+    marginHorizontal: 5,
+    alignItems: "center",
   },
-  separator: {
-    height: 1,
-    backgroundColor: "#ddd",
-    marginVertical: 10,
-  },
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
 });

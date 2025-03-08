@@ -5,7 +5,6 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  Switch,
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,13 +13,12 @@ import * as ImagePicker from "expo-image-picker";
 import Taskbar from "./components/taskbar";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
 
 const Profile = ({ navigation }) => {
   const [profileImage, setProfileImage] = useState(
     require("../assets/images/default-avatar.png")
   );
-  const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -28,14 +26,10 @@ const Profile = ({ navigation }) => {
     const fetchUserDetails = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        console.log("Retrieved Token:", token); // ✅ Debug log
-
         if (!token) {
-          console.log("No token found. Redirecting to login...");
           navigation.replace("SignIn");
           return;
         }
-
         const response = await fetch(
           "https://yatra-bandhu-aj.onrender.com/auth/user",
           {
@@ -46,22 +40,12 @@ const Profile = ({ navigation }) => {
             },
           }
         );
-
         const data = await response.json();
-        console.log("API Response:", data); // ✅ Debugging API response
-
         if (response.ok) {
-          // ✅ Extract only valid fields
           setUser({
             name: data.Name || "N/A",
             email: data.Email || "N/A",
-            phone: data.PhoneNumber || "N/A",
-            age: data.Age || "N/A",
-            accessLevel: data.AccessLevel?.String || "N/A",
-            verified: data.VerifiedStatus?.Bool ? "Verified" : "Not Verified",
           });
-        } else {
-          console.error("Error fetching user:", data.message);
         }
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -69,42 +53,21 @@ const Profile = ({ navigation }) => {
         setLoading(false);
       }
     };
-
     fetchUserDetails();
   }, []);
 
-  const toggleNotifications = () => setIsNotificationsEnabled((prev) => !prev);
-  const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
-
   const handleLogout = async () => {
-    try {
-      console.log("🚪 Logging out...");
-
-      // Clear stored token
-      await AsyncStorage.removeItem("token");
-      await AsyncStorage.removeItem("user");
-
-      // Navigate to the SignIn screen
-      router.replace("/sign-in"); // ✅ Redirect to login screen (Expo Router)
-
-      console.log("✅ Successfully logged out.");
-    } catch (error) {
-      console.error("❌ Logout Error:", error);
-    }
+    await AsyncStorage.removeItem("token");
+    router.replace("/sign-in");
   };
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setProfileImage({ uri: result.assets[0].uri });
-    }
-  };
+  const buttons = [
+    { text: "Edit Profile", icon: "create-outline", route: "/profile-edit" },
+    { text: "Show History", icon: "time-outline", route: "/" },
+    { text: "Notifications", icon: "notifications-outline" },
+    { text: "Privacy & Security", icon: "lock-closed-outline" },
+    { text: "Language", icon: "globe-outline" },
+  ];
 
   return (
     <LinearGradient colors={["#fff", "#79c2d0", "#113f67"]} style={{ flex: 1 }}>
@@ -117,70 +80,24 @@ const Profile = ({ navigation }) => {
               <Image source={profileImage} style={styles.profileImage} />
               <Text style={styles.username}>{user.name}</Text>
               <Text style={styles.email}>{user.email}</Text>
-              <Text style={styles.phone}>{user.phone || "N/A"}</Text>
             </View>
 
             <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => router.push("/profile-edit")}
-              >
-                <LinearGradient
-                  colors={["#113f67", "#79c2d0"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
+              {buttons.map((btn, index) => (
+                <TouchableOpacity
+                  key={index}
                   style={styles.button}
+                  onPress={() => btn.route && router.push(btn.route)}
                 >
-                  <Text style={styles.buttonText}>Edit Profile</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.pro}
-                onPress={() => router.push("/pro")}
-              >
-                <LinearGradient
-                  colors={[
-                    "#feffdf",
-                    "#adf7d1",
-                    "#defcf9",
-                    "#668ba4",
-                    "#feffdf",
-                    "#adf7d1",
-                    "#defcf9",
-                    "#668ba4",
-
-                    "#feffdf",
-                    "#adf7d1",
-                    "#defcf9",
-                    "#668ba4",
-                    "#feffdf",
-                    "#adf7d1",
-                    "#defcf9",
-                    "#668ba4",
-                  ]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.pro}
-                >
-                  <Text style={styles.protext}>Go Premium</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-
-              <View style={styles.settingsContainer}>
-                <TouchableOpacity style={styles.settingsButton}>
-                  <Text style={styles.settingsText}>Notifications</Text>
+                  <View style={styles.buttonContent}>
+                    <Text style={styles.buttonText}>{btn.text}</Text>
+                    <Text style={styles.divider}>|</Text>
+                    <Ionicons name={btn.icon} size={20} color="#fff" />
+                  </View>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.settingsButton}>
-                  <Text style={styles.settingsText}>Privacy & Security</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.settingsButton}>
-                  <Text style={styles.settingsText}>Language</Text>
-                </TouchableOpacity>
-              </View>
+              ))}
             </View>
 
-            {/* Logout Button */}
             <TouchableOpacity
               style={styles.logoutButton}
               onPress={handleLogout}
@@ -194,8 +111,6 @@ const Profile = ({ navigation }) => {
           </Text>
         )}
       </SafeAreaView>
-
-      {/* Taskbar at the bottom */}
       <Taskbar />
     </LinearGradient>
   );
@@ -229,70 +144,35 @@ const styles = StyleSheet.create({
     color: "#113f67",
     marginTop: 5,
   },
-  phone: {
-    fontSize: 16,
-    color: "#113f67",
-    marginTop: 5,
-  },
   buttonContainer: {
     marginTop: 30,
     width: "80%",
-    flexGrow: 1,
+    top: 8,
   },
   button: {
-    paddingVertical: 12,
+    backgroundColor: "#113f67",
     borderRadius: 25,
-    alignItems: "center",
-    width: "100%",
     marginBottom: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    marginTop: 5,
   },
-  pro: {
-    paddingVertical: 35,
-    borderRadius: 15,
+  buttonContent: {
+    flexDirection: "row",
     alignItems: "center",
-    width: "100%",
-    marginBottom: 15,
-    top: -30,
+    justifyContent: "space-between",
   },
   buttonText: {
     fontSize: 18,
     color: "#fff",
-    fontWeight: "500",
+    fontWeight: "400",
+    flex: 1,
+    textAlign: "left",
   },
-  protext: {
-    fontSize: 22,
-    color: "#000",
-    fontWeight: "500",
-    letterSpacing: 2,
-  },
-  settingsContainer: {
-    width: "100%",
-    marginBottom: 20,
-  },
-  settingsRowTransparent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 9, 106, 0.23)",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    width: "100%",
-    marginBottom: 10,
-  },
-  settingsButton: {
-    paddingVertical: 12,
-    borderRadius: 25,
-    alignItems: "center",
-    backgroundColor: "rgba(9, 18, 116, 0.17)",
-    width: "100%",
-    marginBottom: 10,
-    top: -105,
-  },
-  settingsText: {
+  divider: {
+    color: "#fff",
     fontSize: 18,
-    color: "white",
-    fontWeight: "500",
+    paddingHorizontal: 10,
   },
   logoutButton: {
     position: "absolute",
@@ -300,12 +180,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 25,
     alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(181, 16, 16, 0.8)",
     width: "50%",
+    backgroundColor: "rgba(181, 16, 16, 0.8)",
     borderWidth: 2,
     borderColor: "#be3144",
-    alignSelf: "center",
   },
   logoutText: {
     fontSize: 18,

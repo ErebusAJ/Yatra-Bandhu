@@ -72,7 +72,10 @@ const SignIn = () => {
   };
 
   return (
-    <LinearGradient colors={["#113f67", "#79c2d0", "#fff"]} style={{ flex: 1 }}>
+    <LinearGradient
+      colors={["#0d1b2a", "#1b263b", "#fdb44b"]}
+      style={{ flex: 1 }}
+    >
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.logoContainer}>
           <Image
@@ -105,7 +108,7 @@ const SignIn = () => {
 
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
               <LinearGradient
-                colors={["#113f67", "#79c2d0"]}
+                colors={["#0d1b2a", "#fdb44b"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.button}
@@ -122,11 +125,11 @@ const SignIn = () => {
           </View>
         </BlurView>
 
-        <Image
-          source={require("../assets/images/login-loon.png")}
+        {/*<Image
+          source={require("../assets/images/loon-4.png")}
           style={styles.loon}
           resizeMode="contain"
-        />
+        />*/}
       </SafeAreaView>
     </LinearGradient>
   );
@@ -201,11 +204,11 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   loon: {
-    top: "75%",
+    top: "72%",
     alignSelf: "center",
     alignItems: "center",
     height: 200,
-    marginRight: 90,
+    marginRight: 0,
   },
 });
 

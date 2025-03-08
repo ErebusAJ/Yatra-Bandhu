@@ -73,7 +73,10 @@ const Register = () => {
   };
 
   return (
-    <LinearGradient colors={["#113f67", "#79c2d0", "#fff"]} style={{ flex: 1 }}>
+    <LinearGradient
+      colors={["#113f67", "#113f67", "#fdb44b"]}
+      style={{ flex: 1 }}
+    >
       <SafeAreaView style={styles.container}>
         <View style={styles.logoContainer}>
           <Image
@@ -133,7 +136,7 @@ const Register = () => {
 
             <TouchableOpacity style={styles.button} onPress={handleRegister}>
               <LinearGradient
-                colors={["#113f67", "#79c2d0"]}
+                colors={["#113f67", "#fdb44b"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.button}
