@@ -6,77 +6,78 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ Import AsyncStorage
 
-const API_BASE_URL = "https://yatra-bandhu-aj.onrender.com/v1"; // ✅ Replace with actual API URL
-
-const SignIn = () => {
+const Register = () => {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ Function to handle login
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please enter both email and password!");
+  const handleRegister = async () => {
+    if (!fullName || !email || !age || !phone || !password) {
+      alert("Please fill in all fields!");
       return;
     }
 
+    // ✅ Prepare request body with proper formatting
+    const requestBody = {
+      name: fullName.trim(),
+      email: email.trim(),
+      age: Number(age), // Convert age to a number
+      phone_no: phone.trim(),
+      password: password.trim(),
+    };
+
+    console.log("🔹 Sending Request Body:", JSON.stringify(requestBody));
+
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email.trim(),
-          password: password.trim(),
-        }),
-      });
+      const response = await fetch(
+        "https://yatra-bandhu-aj.onrender.com/v1/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
 
       const responseText = await response.text();
-      console.log("Raw Response:", responseText);
+      console.log("🔹 Raw Response:", responseText);
 
       let data;
       try {
         data = JSON.parse(responseText);
-        console.log("Parsed JSON Response:", data);
-      } catch (jsonError) {
-        console.error("JSON Parse Error:", jsonError);
-        Alert.alert("Error", "Unexpected response from the server.");
-        return;
+        console.log("🔹 Parsed JSON Response:", data);
+      } catch (error) {
+        console.error("🔴 JSON Parse Error:", error);
+        data = { message: "Invalid JSON response from server" };
       }
 
       if (response.ok) {
-        const userName = data.user?.username || "User";
-        const token = data.token; // 🔥 Extract token
-
-        if (token) {
-          await AsyncStorage.setItem("token", data.token);
-          console.log("Token saved:", data.token); // ✅ Debugging: Check if token is stored
-        }
-
-        await AsyncStorage.setItem("userName", userName); // ✅ Store username
-        Alert.alert("Success", `Welcome, ${userName}!`);
-        router.push("/homepage");
+        alert("✅ Registration successful!");
+        router.push("/sign-in");
       } else {
-        Alert.alert("Error", data.message || "Invalid credentials!");
+        alert(`⚠️ Registration failed: ${data.message || "Please try again."}`);
       }
     } catch (error) {
-      console.error("Network Error:", error);
-      Alert.alert("Error", "Network error. Please try again later.");
+      console.error("🔴 Network Error:", error);
+      alert("⚠️ Something went wrong. Please try again later.");
     }
   };
 
   return (
     <LinearGradient
-      colors={["#0d1b2a", "#1b263b", "#fdb44b"]}
+      colors={["#113f67", "#113f67", "#fdb44b"]}
       style={{ flex: 1 }}
     >
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.logoContainer}>
           <Image
             source={require("../assets/images/icon_white.png")}
@@ -87,7 +88,15 @@ const SignIn = () => {
 
         <BlurView intensity={100} style={styles.blurContainer}>
           <View style={styles.formContainer}>
-            <Text style={styles.loginTitle}>Welcome Back, Traveler!</Text>
+            <Text style={styles.registerTitle}>Join the Journey🛫</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Full Name"
+              value={fullName}
+              onChangeText={setFullName}
+              placeholderTextColor="#fff"
+            />
 
             <TextInput
               style={styles.input}
@@ -97,6 +106,25 @@ const SignIn = () => {
               placeholderTextColor="#fff"
               keyboardType="email-address"
             />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Age"
+              value={age}
+              onChangeText={setAge}
+              placeholderTextColor="#fff"
+              keyboardType="numeric"
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              value={phone}
+              onChangeText={setPhone}
+              placeholderTextColor="#fff"
+              keyboardType="phone-pad"
+            />
+
             <TextInput
               style={styles.input}
               placeholder="Password"
@@ -106,36 +134,25 @@ const SignIn = () => {
               secureTextEntry
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <TouchableOpacity style={styles.button} onPress={handleRegister}>
               <LinearGradient
-                colors={["#0d1b2a", "#fdb44b"]}
+                colors={["#113f67", "#fdb44b"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.button}
               >
-                <Text style={styles.buttonText}>Login</Text>
+                <Text style={styles.buttonText}>Register</Text>
               </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => router.push("/register")}>
-              <Text style={styles.registerLink}>
-                Don't have an account? Register
-              </Text>
             </TouchableOpacity>
           </View>
         </BlurView>
-
-        {/*<Image
-          source={require("../assets/images/loon-4.png")}
-          style={styles.loon}
-          resizeMode="contain"
-        />*/}
       </SafeAreaView>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
+  container: { flex: 1 },
   logoContainer: {
     position: "absolute",
     top: "7%",
@@ -144,10 +161,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 3,
   },
-  logo: {
-    width: 200,
-    height: 200,
-  },
+  logo: { width: 200, height: 200 },
   blurContainer: {
     position: "absolute",
     top: "35%",
@@ -167,11 +181,11 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 2,
     borderBottomRightRadius: 2,
   },
-  loginTitle: {
-    fontSize: 24,
+  registerTitle: {
+    fontSize: 28,
     fontWeight: "bold",
     color: "#fff",
-    marginBottom: 30,
+    marginBottom: 20,
   },
   input: {
     height: 50,
@@ -194,22 +208,9 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 20,
     color: "#fff",
-    fontWeight: "500",
+    fontWeight: "400",
     textAlign: "center",
-  },
-  registerLink: {
-    fontSize: 16,
-    color: "#fff",
-    marginTop: 10,
-    textDecorationLine: "underline",
-  },
-  loon: {
-    top: "72%",
-    alignSelf: "center",
-    alignItems: "center",
-    height: 200,
-    marginRight: 0,
   },
 });
 
-export default SignIn;
+export default Register;
